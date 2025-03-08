@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { Routes, useNavigate } from 'react-router-dom';
 
 function Signin() {
@@ -7,17 +8,24 @@ function Signin() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSignin = (e) => {
+  const handleSignin =async (e) => {
     e.preventDefault();
     setError('');
 
-    if (!username || !password) {
-      setError('Username and password are required');
-      return;
-    }
+    try {
+      const res = await axios.post('http://localhost:5001/signin', { username, password });
+      console.log('Signin Response:', res.data);
 
-    alert('Signin successful! Redirecting to dashboard.');
-    navigate('/dashboard'); // Redirect to dashboard
+      if (res.data.token) {
+        localStorage.setItem('authToken', res.data.token);
+        navigate('/dashboard'); // Redirect to dashboard
+      } else {
+        setError('Invalid credentials');
+      }
+    } catch (err) {
+      console.error('Signin Request Error:', err.response?.data || err.message);
+      setError(err.response?.data?.message || 'Something went wrong. Please try again.');
+    }
   };
 
   return (

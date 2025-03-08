@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 
 function Signup() {
@@ -7,7 +8,7 @@ function Signup() {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  const handleSignup = (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setError('');
 
@@ -15,10 +16,20 @@ function Signup() {
       setError('Username and password are required');
       return;
     }
-
+    try 
+    {
+      const res = await axios.post('http://localhost:5001/signup', {
+        username,
+        password, 
+      });
     alert('Signup successful! Please sign in.');
     navigate('/signin'); // Redirect to signin page
-  };
+  }
+  catch (err) {
+    console.error('Signup Error:', err.response?.data || err.message);
+    setError(err.response?.data?.message || 'Signup failed. Please try again.');
+  }
+};
 
   return (
     <div className="form-container">

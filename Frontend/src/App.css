@@ -4,6 +4,13 @@
   flex-direction: column;
   justify-content: space-around;
 }
+.pdbutton{
+  height: 200px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+}
 #home1{
   height: 100px;
   display: flex;
@@ -11,10 +18,10 @@
   justify-content: space-between;
 }
 #home2{
-  height: 100px;
+  height: 250px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 #foot2{
   
@@ -57,7 +64,7 @@ body {
 }
 
 header {
-  background: linear-gradient(90deg, #8357ec 0%, #3d3140 100%);
+  background: linear-gradient(90deg, #9c64a8 0%, #3d3140 100%);
   color: #fff;
   padding: 15px 0;
   text-align: center;

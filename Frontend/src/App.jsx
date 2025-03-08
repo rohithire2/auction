@@ -6,6 +6,8 @@ import Signin from './Component/Signin';
 import Dashboard from './Component/Dashboard';
 import Landing from './Component/Landing';
 import PostAuction from './Component/PostAuction';
+import Delete from './Component/Delete';
+
 import AuctionItem from './Component/AuctionItem';
 
 import './App.css';
@@ -22,10 +24,7 @@ return(
       <nav>
       <img id="logo" src="r3.png" alt="hello" />
         
-        {/* <Link to="/" className="nav-link">Landing</Link> */}
-        {/* <Link to="/dashboard" className="nav-link">Dashboard</Link>
-        <Link to="/postauction" className="nav-link">Post Auction</Link>
-        <Link to="/auctionItem" className="nav-link">AuctionItem</Link> */}
+
 
       </nav>
     </header>
@@ -38,6 +37,9 @@ return(
         <Route path="/" element={<Landing />} />
         <Route path="/postauction" element={<PostAuction />} />
         <Route path="/auctionitem" element={<AuctionItem />} />
+        <Route path="/auctions/:id" element={<AuctionItem />} />
+        <Route path="/deleteauction" element={<Delete />} />
+       
       </Routes>
       
     </main>

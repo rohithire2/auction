@@ -74,16 +74,32 @@ app.post('/Signup', async (req, res) => {
 });
 
 // Signin Route
+// Corrected Signin Route
 app.post('/signin', async (req, res) => {
-  const { username, password } = req.body;
-  const user = await User.findOne({ username, password });
-  if (user) {
-    const token = jwt.sign({ userId: user._id, username }, SECRET_KEY, { expiresIn: '1h' });//this token helps the user to remain signed in for an 1hour
-      res.json({ message: 'Signin successful', token });
-  } else {
-    res.status(400).json({ message: 'Invalid credentials' });
+  try {
+    const { username, password } = req.body;
+
+    // Check if the user exists
+    const user = await User.findOne({ username });
+    if (!user) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Compare the hashed password
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      return res.status(400).json({ message: 'Invalid credentials' });
+    }
+
+    // Generate token after successful authentication
+    const token = jwt.sign({ userId: user._id, username }, SECRET_KEY, { expiresIn: '1h' });
+    res.json({ message: 'Signin successful', token });
+  } catch (error) {
+    console.error('Signin Error:', error);
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
 
 
 
@@ -147,21 +163,23 @@ app.post('/auction', authenticate, async (req, res) => {
 });
 
 //delete the auction item
-app.delete('/auction/:id', authenticate, async (req, res) => {
+app.delete('/auctions/name/:itemName', async (req, res) => {
   try {
-    const { id } = req.params;
+    const itemName = decodeURIComponent(req.params.itemName).trim(); // ✅ Handle spaces & special characters
+    console.log(`🔎 Searching for auction with itemName: "${itemName}"`);
 
-    // Find and delete the auction item by ID
-    const deletedItem = await AuctionItem.findByIdAndDelete(id);
+    const auctionItem = await AuctionItem.findOne({ itemName: { $regex: `^${itemName}$`, $options: "i" } }); // ✅ Case-insensitive search
 
-    if (!deletedItem) {
-      return res.status(404).json({ message: 'Auction item not found' });
+    if (!auctionItem) {
+      console.log(`❌ No auction found for "${itemName}"`);
+      return res.status(404).json({ message: `Auction item '${itemName}' not found` });
     }
 
-    res.status(200).json({ message: 'Auction item deleted successfully', item: deletedItem });
+    await AuctionItem.deleteOne({ _id: auctionItem._id }); // ✅ Use _id to ensure correct deletion
+    res.json({ message: `Auction item '${itemName}' deleted successfully` });
   } catch (error) {
-    console.error('Auction Delete Error:', error);
-    res.status(500).json({ message: 'Internal Server Error' });
+    console.error("❌ Delete Auction Error:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

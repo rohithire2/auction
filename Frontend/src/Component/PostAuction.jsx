@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 function PostAuction() {
   const [itemName, setItemName] = useState('');
@@ -7,11 +8,30 @@ function PostAuction() {
   const [closingTime, setClosingTime] = useState('');
   const navigate = useNavigate();
 
-  const handlePostAuction = (e) => {
+  const handlePostAuction = async (e) => {
     e.preventDefault();
-    alert('Auction item posted (simulation)!');
-  };
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      alert('You must be signed in to post an auction.');
+      navigate('/signin');
+      return;
+    }
 
+    try {
+      await axios.post(
+        'http://localhost:5001/auction',
+        { itemName, description, startingBid, closingTime },
+        { headers: { Authorization: `Bearer ${token}` } } // Send token in headers
+      );
+
+      alert('Auction item posted!');
+      navigate('/dashboard');
+    } catch (err) {
+      alert('Failed to post auction. Please try again.');
+      // setEror(err.message)
+    }
+  };
+  
   return (
     <div className="form-container">
       <h2>Post New Auction</h2>
@@ -42,7 +62,7 @@ function PostAuction() {
           onChange={(e) => setClosingTime(e.target.value)}
           required
         />
-        <div className='pbutton'>
+        <div className='pdbutton'>
         <button type="submit">Post Auction</button>
         <button onClick={() => navigate('/dashboard')}>Go to Dashboard</button>
         </div>

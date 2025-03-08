@@ -118,7 +118,7 @@ function AuctionItem() {
       <ul>
         {items.map((auction) => (
           <li key={auction._id}>
-            <Link to={`/auction/${auction._id}`}>
+            <Link to={`/auctions/${auction._id}`}>
               {auction.itemName} - Current Bid: ${auction.currentBid} {auction.isClosed ? '(Closed)' : ''}
             </Link>
           </li>
